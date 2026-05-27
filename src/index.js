@@ -9,7 +9,6 @@ app.use(express.json());
 app.use(authorsRouter);
 app.use(userRoutes);
 
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
