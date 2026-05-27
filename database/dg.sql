@@ -13,3 +13,15 @@ INSERT INTO users (username, email, password_hash) VALUES
 ('ANA_doe', 'ana.doe@example.com', '12345678');
 
 SELECT * FROM users;
+
+CREATE TABLE posts (
+     id SERIAL PRIMARY KEY,
+     title VARCHAR(255) NOT NULL,
+     content TEXT NOT NULL,
+     author_id INTEGER NOT NULL,
+     published BOOLEAN DEFAULT FALSE,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO posts (title, content, author_id, published) VALUES
+('First Post vAMOOOOOOOOOOOOOO', 'This is the content of the first post.', 5, TRUE);
