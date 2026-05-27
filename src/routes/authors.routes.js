@@ -25,7 +25,7 @@ router.get('/users/posts', async (req, res) => {
 
 
 
-router.get('/users/:id/posts', async (req, res) => {
+router.get('/users/posts/:id', async (req, res) => {
   const { id } = req.params;
 
   // Verificar que el usuario existe

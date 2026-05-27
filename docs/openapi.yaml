@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: Mi Blog API
+  version: 1.0.0
+  description: API para gestionar usuarios y posts
+
+servers:
+  - url: http://localhost:4000
+    description: Servidor local
+
+paths:
+  /users:
+    get:
+      summary: Obtener todos los usuarios
+      tags: [Usuarios]
+      responses:
+        "200":
+          description: Lista de usuarios
+
+    post:
+      summary: Crear un usuario
+      tags: [Usuarios]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "200":
+          description: Usuario creado
+
+  /users/{id}:
+    get:
+      summary: Obtener usuario por ID
+      tags: [Usuarios]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuario encontrado
+        "404":
+          description: Usuario no encontrado
+
+    put:
+      summary: Actualizar usuario
+      tags: [Usuarios]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "200":
+          description: Usuario actualizado
+
+    delete:
+      summary: Eliminar usuario
+      tags: [Usuarios]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Usuario eliminado
+
+  /users/posts:
+    get:
+      summary: Obtener todos los posts de todos los usuarios
+      tags: [Posts]
+      responses:
+        "200":
+          description: Lista de posts con datos del autor
+
+  /users/{id}/posts:
+    get:
+      summary: Obtener posts de un usuario específico
+      tags: [Posts]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Posts del usuario
+        "404":
+          description: Usuario no encontrado
+
+components:
+  schemas:
+    UserInput:
+      type: object
+      required: [username, email, password_hash]
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password_hash:
+          type: string
