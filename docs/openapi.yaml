@@ -16,7 +16,6 @@ paths:
       responses:
         "200":
           description: Lista de usuarios
-
     post:
       summary: Crear un usuario
       tags: [Usuarios]
@@ -45,7 +44,6 @@ paths:
           description: Usuario encontrado
         "404":
           description: Usuario no encontrado
-
     put:
       summary: Actualizar usuario
       tags: [Usuarios]
@@ -64,7 +62,6 @@ paths:
       responses:
         "200":
           description: Usuario actualizado
-
     delete:
       summary: Eliminar usuario
       tags: [Usuarios]
@@ -88,7 +85,7 @@ paths:
 
   /users/{id}/posts:
     get:
-      summary: Obtener posts de un usuario específico
+      summary: Obtener posts de un usuario especifico
       tags: [Posts]
       parameters:
         - in: path
@@ -99,6 +96,28 @@ paths:
       responses:
         "200":
           description: Posts del usuario
+        "404":
+          description: Usuario no encontrado
+    post:
+      summary: Crear un post para un usuario
+      tags: [Posts]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostInput"
+      responses:
+        "201":
+          description: Post creado
+        "400":
+          description: Datos invalidos
         "404":
           description: Usuario no encontrado
 
@@ -114,3 +133,16 @@ components:
           type: string
         password_hash:
           type: string
+    PostInput:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+          example: Mi primer post
+        content:
+          type: string
+          example: Este es el contenido del post
+        published:
+          type: boolean
+          example: true

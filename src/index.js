@@ -20,9 +20,17 @@ const swaggerDocument = yaml.parse(
 const app = express();
 app.use(express.json());
 
-// Ruta de documentación
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Ruta de documentación Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  swaggerOptions: {
+    url: '/api-docs/swagger.json'
+  }
+}));
 
+// Agregá esta ruta también — sirve el JSON directo
+app.get('/api-docs/swagger.json', (req, res) => {
+  res.json(swaggerDocument);
+});
 app.use(authorsRouter);
 app.use(userRoutes);
 
