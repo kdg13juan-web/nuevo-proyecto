@@ -4,6 +4,7 @@ import { port } from './config.js';
 import userRoutes from './routes/users.routes.js';
 
 app.use(express.json());
+
 app.use(userRoutes);
 
 
