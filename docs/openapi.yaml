@@ -72,8 +72,10 @@ paths:
           schema:
             type: integer
       responses:
-        "204":
+        "200":
           description: Usuario eliminado
+        "404":
+          description: Usuario no encontrado
 
   /users/posts:
     get:
@@ -120,6 +122,56 @@ paths:
           description: Datos invalidos
         "404":
           description: Usuario no encontrado
+
+  /users/{userId}/posts/{postId}:
+    put:
+      summary: Actualizar un post para un usuario
+      tags: [Posts]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostInput"
+      responses:
+        "200":
+          description: Post actualizado
+        "400":
+          description: Datos invalidos
+        "404":
+          description: Usuario no encontrado
+
+    delete:
+      summary: Eliminar un post de un usuario
+      tags: [Posts]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Post eliminado
+        "404":
+          description: Post o usuario no encontrado
+
 
 components:
   schemas:

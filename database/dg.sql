@@ -24,4 +24,4 @@ CREATE TABLE posts (
 );
 
 INSERT INTO posts (title, content, author_id, published) VALUES
-('First Post vAMOOOOOOOOOOOOOO', 'This is the content of the first post.', 5, TRUE);
+('First Post ', 'This is the content of the first post.', 5, TRUE);
