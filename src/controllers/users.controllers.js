@@ -1,0 +1,41 @@
+import {pool} from '../db.js'
+
+export const getAllUsers = async (req, res) => {
+    const result = await pool.query('SELECT * FROM users')
+    res.json(result.rows)
+}
+
+export const getUserById = async (req, res) => {async (req, res) => {
+    const {id} = req.params
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id])
+
+    if (result.rows.length === 0) {
+        return res.status(404).json({message: 'User not found'})
+    }
+    res.json(result.rows)
+}}
+
+export const createUser = async (req, res) => {async (req, res) => {
+    const {username, email, password_hash} = req.body
+    const result = await pool.query('INSERT INTO users(username, email, password_hash) VALUES($1, $2, $3) RETURNING *', [username, email, password_hash])
+    res.json(result.rows[0])
+}}
+
+export const deleteUser = async (req, res) => {async (req, res) => {
+    const {id} = req.params
+    const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id])
+
+
+    if (result.rows.length === 0) {
+        return res.status(404).json({message: 'User not found'})
+    }
+    
+    return res.status(204).send()
+}}
+
+export const updateUser = async (req, res) => {
+    const {id} = req.params
+    const {username, email, password_hash} = req.body
+    const result = await pool.query('UPDATE users SET username = $1, email = $2, password_hash = $3 WHERE id = $4 RETURNING *', [username, email, password_hash, id])
+    res.json(result.rows[0])
+}

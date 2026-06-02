@@ -1,46 +1,20 @@
 import {Router} from 'express'
-import {pool} from '../db.js'
+import { getAllUsers } from '../controllers/users.controllers.js'
+import { getUserById } from '../controllers/users.controllers.js'
+import { createUser } from '../controllers/users.controllers.js'
+import { deleteUser } from '../controllers/users.controllers.js'
+import { updateUser } from '../controllers/users.controllers.js'
 
 const router = Router()
 
-router.get('/users', async (req, res) => {
-    const result = await pool.query('SELECT * FROM users')
-    res.json(result.rows)
-})
+router.get('/users', getAllUsers)
 
-router.get('/users/:id', async (req, res) => {
-    const {id} = req.params
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id])
+router.get('/users/:id', getUserById)
 
-    if (result.rows.length === 0) {
-        return res.status(404).json({message: 'User not found'})
-    }
-    res.json(result.rows)
-})
+router.post('/users', createUser)
 
-router.post('/users', async (req, res) => {
-    const {username, email, password_hash} = req.body
-    const result = await pool.query('INSERT INTO users(username, email, password_hash) VALUES($1, $2, $3) RETURNING *', [username, email, password_hash])
-    res.json(result.rows[0])
-})
+router.delete('/users/:id', deleteUser)
 
-router.delete('/users/:id', async (req, res) => {
-    const {id} = req.params
-    const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id])
-
-
-    if (result.rows.length === 0) {
-        return res.status(404).json({message: 'User not found'})
-    }
-    
-    return res.status(204).send()
-})
-
-router.put('/users/:id', async (req, res) => {
-    const {id} = req.params
-    const {username, email, password_hash} = req.body
-    const result = await pool.query('UPDATE users SET username = $1, email = $2, password_hash = $3 WHERE id = $4 RETURNING *', [username, email, password_hash, id])
-    res.json(result.rows[0])
-})
+router.put('/users/:id', updateUser)
 
 export default router

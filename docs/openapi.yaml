@@ -124,6 +124,26 @@ paths:
           description: Usuario no encontrado
 
   /users/{userId}/posts/{postId}:
+    get:
+      summary: Obtener posts de un usuario especifico
+      tags: [Posts]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+        
+      responses:
+        "200":
+          description: Posts del usuario
+        "404":
+          description: Usuario no encontrado
     put:
       summary: Actualizar un post para un usuario
       tags: [Posts]
