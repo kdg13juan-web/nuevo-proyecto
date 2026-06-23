@@ -1,154 +1,93 @@
 import { pool } from '../db.js';
 
-export const getAllPosts = async (req, res) => {
-  const result = await pool.query(`
-    SELECT 
-      posts.id,
-      posts.title,
-      posts.content,
-      posts.published,
-      posts.created_at,
-      users.username,
-      users.email
-    FROM posts
-    JOIN users ON posts.author_id = users.id
-    ORDER BY posts.created_at DESC
-  `);
-
-  res.json({
-    total: result.rows.length,
-    posts: result.rows
-  });
+export const getAllAuthors = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, username, email, created_at FROM authors ORDER BY id'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getPost= async (req, res) => {
-  const { id } = req.params;
-
-  const userResult = await pool.query(
-    'SELECT id, username, email FROM users WHERE id = $1',
-    [id]
-  );
-
-  if (userResult.rows.length === 0) {
-    return res.status(404).json({ error: 'Usuario no encontrado' });
+export const getAuthorById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      'SELECT id, username, email, created_at FROM authors WHERE id = $1',
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Autor no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
   }
-
-  const postsResult = await pool.query(
-    'SELECT * FROM posts WHERE author_id = $1 ORDER BY created_at DESC',
-    [id]
-  );
-
-  res.json({
-    user: userResult.rows[0],
-    total_posts: postsResult.rows.length,
-    posts: postsResult.rows
-  });
 };
 
-export const getPostId = async (req, res) => {
-  const { id, postId } = req.params;
+export const createAuthor = async (req, res, next) => {
+  try {
+    const { username, email, password_hash } = req.body;
 
-  const postResult = await pool.query(
-    'SELECT * FROM posts WHERE id = $1 AND author_id = $2',
-    [postId, id]
-  );
+    if (!username || !email || !password_hash) {
+      return res.status(400).json({
+        error: 'username, email y password_hash son obligatorios'
+      });
+    }
 
-  if (postResult.rows.length === 0) {
-    return res.status(404).json({ error: 'Post no encontrado' });
+    const result = await pool.query(
+      `INSERT INTO authors (username, email, password_hash)
+       VALUES ($1, $2, $3)
+       RETURNING id, username, email, created_at`,
+      [username, email, password_hash]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    next(err);
   }
-
-  res.json(postResult.rows[0]);
 };
 
-export const createPost = async (req, res) => {
-  const { id } = req.params;
-  const { title, content, published } = req.body;
+export const updateAuthor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { username, email, password_hash } = req.body;
 
-  const userResult = await pool.query(
-    'SELECT id FROM users WHERE id = $1',
-    [id]
-  );
+    if (!username || !email || !password_hash) {
+      return res.status(400).json({
+        error: 'username, email y password_hash son obligatorios'
+      });
+    }
 
-  if (userResult.rows.length === 0) {
-    return res.status(404).json({ error: 'Usuario no encontrado' });
+    const result = await pool.query(
+      `UPDATE authors
+       SET username = $1, email = $2, password_hash = $3
+       WHERE id = $4
+       RETURNING id, username, email, created_at`,
+      [username, email, password_hash, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Autor no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
   }
-
-  if (!title || !content) {
-    return res.status(400).json({ error: 'title y content son obligatorios' });
-  }
-
-  const result = await pool.query(
-    `INSERT INTO posts (title, content, author_id, published) 
-     VALUES ($1, $2, $3, $4) 
-     RETURNING *`,
-    [title, content, id, published ?? false]
-  );
-
-  res.status(201).json(result.rows[0]);
 };
 
-export const putPost = async (req, res) => {
-  const { postId, userId } = req.params;
-  const { title, content, published } = req.body;
-
-  const userResult = await pool.query(
-    'SELECT id FROM users WHERE id = $1',
-    [userId]
-  );
-
-  if (userResult.rows.length === 0) {
-    return res.status(404).json({ error: 'Usuario no encontrado' });
+export const deleteAuthor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      'DELETE FROM authors WHERE id = $1 RETURNING id',
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Autor no encontrado' });
+    }
+    res.status(204).send();
+  } catch (err) {
+    next(err);
   }
-
-  if (!title || !content) {
-    return res.status(400).json({ error: 'title y content son obligatorios' });
-  }
-  const postCheck = await pool.query(
-    'SELECT id FROM posts WHERE id = $1 AND author_id = $2',
-    [postId, userId]
-  );
-
-  if (postCheck.rows.length === 0) {
-    return res.status(404).json({ error: 'Post no encontrado' });
-  }
-
-  const result = await pool.query(
-    `UPDATE posts 
-     SET title = $1, content = $2, published = $3, updated_at = NOW()
-     WHERE id = $4
-     RETURNING *`,
-    [title, content, published ?? false, postId]
-  );
-
-  res.status(200).json(result.rows[0]);
 };
-
-export const deletePost = async (req, res) => {
-  const { postId, userId } = req.params;
-
-  const userResult = await pool.query(
-    'SELECT id FROM users WHERE id = $1',
-    [userId]
-  );
-
-  if (userResult.rows.length === 0) {
-    return res.status(404).json({ error: 'Usuario no encontrado' });
-  }
-
-  const postCheck = await pool.query(
-    'SELECT id FROM posts WHERE id = $1 AND author_id = $2',
-    [postId, userId]
-  );
-
-  if (postCheck.rows.length === 0) {
-    return res.status(404).json({ error: 'Post no encontrado' });
-  }
-
-  await pool.query(
-    'DELETE FROM posts WHERE id = $1',
-    [postId]
-  );
-
-  res.status(200).json({ message: 'Post eliminado correctamente' });
-};
-

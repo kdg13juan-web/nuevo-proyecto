@@ -1,9 +1,9 @@
 import pg from 'pg';
 
 export const pool = new pg.Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'nodepg',
-  password: 'admin123',
-  port: 5432,
+  user:     process.env.DB_USER,
+  host:     process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port:     Number(process.env.DB_PORT),
 });

@@ -2,37 +2,37 @@ openapi: 3.0.0
 info:
   title: Mi Blog API
   version: 1.0.0
-  description: API para gestionar usuarios y posts
+  description: API para gestionar autores y posts
 
 servers:
   - url: http://localhost:4000
     description: Servidor local
 
 paths:
-  /users:
+  /authors:
     get:
-      summary: Obtener todos los usuarios
-      tags: [Usuarios]
+      summary: Obtener todos los autores
+      tags: [Autores]
       responses:
         "200":
-          description: Lista de usuarios
+          description: Lista de autores
     post:
-      summary: Crear un usuario
-      tags: [Usuarios]
+      summary: Crear un autor
+      tags: [Autores]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserInput"
+              $ref: "#/components/schemas/AuthorInput"
       responses:
-        "200":
-          description: Usuario creado
+        "201":
+          description: Autor creado
 
-  /users/{id}:
+  /authors/{id}:
     get:
-      summary: Obtener usuario por ID
-      tags: [Usuarios]
+      summary: Obtener autor por ID
+      tags: [Autores]
       parameters:
         - in: path
           name: id
@@ -41,12 +41,12 @@ paths:
             type: integer
       responses:
         "200":
-          description: Usuario encontrado
+          description: Autor encontrado
         "404":
-          description: Usuario no encontrado
+          description: Autor no encontrado
     put:
-      summary: Actualizar usuario
-      tags: [Usuarios]
+      summary: Actualizar autor
+      tags: [Autores]
       parameters:
         - in: path
           name: id
@@ -58,13 +58,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserInput"
+              $ref: "#/components/schemas/AuthorInput"
       responses:
         "200":
-          description: Usuario actualizado
+          description: Autor actualizado
+        "404":
+          description: Autor no encontrado
     delete:
-      summary: Eliminar usuario
-      tags: [Usuarios]
+      summary: Eliminar autor
+      tags: [Autores]
       parameters:
         - in: path
           name: id
@@ -72,22 +74,22 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: Usuario eliminado
+        "204":
+          description: Autor eliminado
         "404":
-          description: Usuario no encontrado
+          description: Autor no encontrado
 
-  /users/posts:
+  /authors/posts:
     get:
-      summary: Obtener todos los posts de todos los usuarios
+      summary: Obtener todos los posts de todos los autores
       tags: [Posts]
       responses:
         "200":
           description: Lista de posts con datos del autor
 
-  /users/{id}/posts:
+  /authors/{id}/posts:
     get:
-      summary: Obtener posts de un usuario especifico
+      summary: Obtener posts de un autor específico
       tags: [Posts]
       parameters:
         - in: path
@@ -97,11 +99,11 @@ paths:
             type: integer
       responses:
         "200":
-          description: Posts del usuario
+          description: Posts del autor
         "404":
-          description: Usuario no encontrado
+          description: Autor no encontrado
     post:
-      summary: Crear un post para un usuario
+      summary: Crear un post para un autor
       tags: [Posts]
       parameters:
         - in: path
@@ -119,17 +121,17 @@ paths:
         "201":
           description: Post creado
         "400":
-          description: Datos invalidos
+          description: Datos inválidos
         "404":
-          description: Usuario no encontrado
+          description: Autor no encontrado
 
-  /users/{userId}/posts/{postId}:
+  /authors/{authorId}/posts/{postId}:
     get:
-      summary: Obtener posts de un usuario especifico
+      summary: Obtener un post específico de un autor
       tags: [Posts]
       parameters:
         - in: path
-          name: userId
+          name: authorId
           required: true
           schema:
             type: integer
@@ -138,18 +140,17 @@ paths:
           required: true
           schema:
             type: integer
-        
       responses:
         "200":
-          description: Posts del usuario
+          description: Post encontrado
         "404":
-          description: Usuario no encontrado
+          description: Post o autor no encontrado
     put:
-      summary: Actualizar un post para un usuario
+      summary: Actualizar un post de un autor
       tags: [Posts]
       parameters:
         - in: path
-          name: userId
+          name: authorId
           required: true
           schema:
             type: integer
@@ -168,16 +169,15 @@ paths:
         "200":
           description: Post actualizado
         "400":
-          description: Datos invalidos
+          description: Datos inválidos
         "404":
-          description: Usuario no encontrado
-
+          description: Post o autor no encontrado
     delete:
-      summary: Eliminar un post de un usuario
+      summary: Eliminar un post de un autor
       tags: [Posts]
       parameters:
         - in: path
-          name: userId
+          name: authorId
           required: true
           schema:
             type: integer
@@ -190,21 +190,23 @@ paths:
         "200":
           description: Post eliminado
         "404":
-          description: Post o usuario no encontrado
-
+          description: Post o autor no encontrado
 
 components:
   schemas:
-    UserInput:
+    AuthorInput:
       type: object
       required: [username, email, password_hash]
       properties:
         username:
           type: string
+          example: johndoe
         email:
           type: string
+          example: john@example.com
         password_hash:
           type: string
+          example: "123456"
     PostInput:
       type: object
       required: [title, content]
