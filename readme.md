@@ -1,6 +1,9 @@
-# Mi Blog API
+# MiniBlogM2
 
 API REST para gestionar autores y posts. Construida con Node.js, Express y PostgreSQL.
+
+🚀 **Deploy:** [miniblogm2-production.up.railway.app](https://miniblogm2-production.up.railway.app)  
+📖 **Swagger:** [miniblogm2-production.up.railway.app/api-docs](https://miniblogm2-production.up.railway.app/api-docs)
 
 ---
 
@@ -17,19 +20,13 @@ API REST para gestionar autores y posts. Construida con Node.js, Express y Postg
 
 ```bash
 git clone <url-del-repo>
-cd nuevo-proyecto
+cd MiniBlogM2
 npm install
 ```
 
 ### 2. Configurar variables de entorno
 
-Copiá el archivo de ejemplo y completá con tus datos:
-
-```bash
-cp .env.example .env
-```
-
-Contenido de `.env`:
+Creá un archivo `.env` en la raíz con el siguiente contenido:
 
 ```
 PORT=4000
@@ -148,10 +145,10 @@ psql <DATABASE_URL> -f docs/setup.sql
 
 ### 6. Deploy automático
 
-Cada push a `main` despliega automáticamente. Railway te da una URL pública tipo:
+Cada push a `main` despliega automáticamente. La URL pública del proyecto es:
 
 ```
-https://tu-proyecto.up.railway.app
+https://miniblogm2-production.up.railway.app
 ```
 
 ---
@@ -159,7 +156,7 @@ https://tu-proyecto.up.railway.app
 ## Estructura del proyecto
 
 ```
-nuevo-proyecto/
+MiniBlogM2/
 ├── src/
 │   ├── controllers/
 │   │   ├── authors.controllers.js
@@ -167,16 +164,33 @@ nuevo-proyecto/
 │   ├── routes/
 │   │   ├── authors.routes.js
 │   │   └── posts.routes.js
+│   ├── services/
+│   │   ├── authors.service.js
+│   │   └── posts.service.js
 │   ├── middleware/
 │   │   └── errorHandler.js
+│   ├── config.js
 │   ├── db.js
 │   └── index.js
 ├── docs/
-│   ├── openapi.yaml
-│   └── setup.sql
+│   └── openapi.yaml
 ├── tests/
 │   └── api.test.js
 ├── .env.example
 ├── package.json
 └── README.md
+```
+
+---
+
+## Ver deploy
+
+Podés probar la API directamente desde el deploy:
+
+```bash
+# Listar autores
+curl https://miniblogm2-production.up.railway.app/authors
+
+# Listar posts
+curl https://miniblogm2-production.up.railway.app/authors/posts
 ```
