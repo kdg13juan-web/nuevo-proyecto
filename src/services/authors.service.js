@@ -1,22 +1,45 @@
-// Busca todos los posts de un autor específico
-export async function getPostsByAuthor(pool, authorId) {
+import { pool } from '../db.js';
 
-  // Primero verificamos que el autor exista
-  const authorResult = await pool.query(
-    'SELECT id FROM authors WHERE id = $1',
-    [authorId]
+export const findAllAuthors = async () => {
+  const result = await pool.query(
+    'SELECT id, username, email, created_at FROM authors ORDER BY id'
   );
+  return result.rows;
+};
 
-  // Si no existe, devolvemos null para manejarlo en la ruta
-  if (authorResult.rows.length === 0) {
-    return null;
-  }
-
-  // Si existe, traemos sus posts
-  const postsResult = await pool.query(
-    'SELECT * FROM posts WHERE author_id = $1 ORDER BY created_at DESC',
-    [authorId]
+export const findAuthorById = async (id) => {
+  const result = await pool.query(
+    'SELECT id, username, email, created_at FROM authors WHERE id = $1',
+    [id]
   );
+  return result.rows[0] || null;
+};
 
-  return postsResult.rows;
-}
+export const insertAuthor = async ({ username, email, password_hash }) => {
+  const result = await pool.query(
+    `INSERT INTO authors (username, email, password_hash)
+     VALUES ($1, $2, $3)
+     RETURNING id, username, email, created_at`,
+    [username, email, password_hash]
+  );
+  return result.rows[0];
+};
+
+export const updateAuthorById = async (id, { username, email, password_hash }) => {
+  const result = await pool.query(
+    `UPDATE authors
+     SET username = $1, email = $2, password_hash = $3
+     WHERE id = $4
+     RETURNING id, username, email, created_at`,
+    [username, email, password_hash, id]
+  );
+  return result.rows[0] || null;
+};
+
+export const deleteAuthorById = async (id) => {
+  const result = await pool.query(
+    'DELETE FROM authors WHERE id = $1 RETURNING id',
+    [id]
+  );
+  return result.rows[0] || null;
+};
