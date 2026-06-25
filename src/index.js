@@ -20,11 +20,21 @@ const swaggerDocument = yaml.parse(
 const app  = express();
 const port = process.env.PORT || 4000;
 
+// Middleware CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 app.use(express.json());
 
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/api-docs/swagger.json', (req, res) => res.json(swaggerDocument));
+
 
 // Routers — posts primero para que /authors/posts no colisione con /authors/:id
 app.use(postsRouter);
