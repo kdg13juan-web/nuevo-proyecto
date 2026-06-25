@@ -344,4 +344,4 @@ ISC — Libre de usar, modificar y distribuir.
 
 ## Contacto
 
-GitHub: [@kdg13juan](https://github.com/kdg13juan)  
+GitHub: [@kdg13juan-web](https://github.com/kdg13juan-web)  
